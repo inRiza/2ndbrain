@@ -43,14 +43,6 @@ export default function Navbar({ projectId = "" }: { projectId?: string }) {
               </Link>
             </>
           ) : null}
-          {inProject ? (
-            <Link
-              href="/projects"
-              className="rounded-sm px-2.5 py-1.5 text-sm font-medium text-rc-fg-muted transition-colors hover:bg-rc-surface-hover hover:text-rc-fg"
-            >
-              Projects
-            </Link>
-          ) : null}
         </nav>
         <div className="flex shrink-0 items-center gap-2">
           <ThemeToggle />

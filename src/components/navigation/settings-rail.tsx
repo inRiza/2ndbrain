@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Settings } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Settings } from "lucide-react";
 import Button from "@/components/action/button";
 import UserAvatar from "@/components/auth/user-avatar";
 import { useAuth } from "@/components/auth/auth-provider";
 
-export default function SettingsRail() {
+export default function SettingsRail({ showBack = false }: { showBack?: boolean }) {
   const router = useRouter();
   const { user, changePassword, logout, regenerateAvatar } = useAuth();
   const [open, setOpen] = useState(false);
@@ -72,6 +73,15 @@ export default function SettingsRail() {
           <UserAvatar username={user.username} avatarUrl={user.avatarUrl} size={28} />
           <span className="truncate text-xs font-medium text-rc-fg-muted">{user.username}</span>
         </div>
+        {showBack ? (
+          <Link
+            href="/projects"
+            className="inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-rc-fg-muted transition-colors hover:bg-rc-surface-hover hover:text-rc-fg"
+          >
+            <ArrowLeft className="h-4 w-4 shrink-0" aria-hidden />
+            Back to projects
+          </Link>
+        ) : null}
         <button
           type="button"
           onClick={() => setOpen(true)}

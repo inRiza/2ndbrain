@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/action/button";
-import AppShell from "@/components/navigation/app-shell";
 
 type Mode = "pick" | "create" | "join";
 
@@ -58,8 +57,8 @@ export default function ProjectsHub() {
   };
 
   return (
-    <AppShell projectId="">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-8">
+    <main className="flex min-h-screen items-center justify-center bg-rc-bg px-4 py-8 text-rc-fg">
+      <div className="flex w-full max-w-md flex-col gap-6">
         <div className="flex flex-col gap-1 px-1">
           <h1 className="text-2xl font-semibold tracking-tight text-rc-fg">Projects</h1>
           <p className="text-sm leading-relaxed text-rc-fg-muted">
@@ -171,6 +170,6 @@ export default function ProjectsHub() {
           </div>
         ) : null}
       </div>
-    </AppShell>
+    </main>
   );
 }
