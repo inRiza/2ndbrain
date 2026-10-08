@@ -88,6 +88,33 @@ export async function saveProjectIdea(
   return { ok: true as const };
 }
 
+export async function deleteProjectIdea(
+  publicId: string,
+  slug: string,
+  username: string,
+): Promise<{ ok: true } | ProjectIdeasError> {
+  if (!username) return { error: "Not signed in." };
+  const access = await requireProjectMember(publicId);
+  if ("error" in access) return { error: access.error };
+  const sql = getSql();
+  const rows = await sql`
+    SELECT author
+    FROM project_ideas
+    WHERE project_id = ${access.project.id} AND slug = ${slug}
+    LIMIT 1
+  `;
+  const row = rows[0] as { author: string } | undefined;
+  if (!row) return { error: "Idea not found." };
+  if (row.author !== username) {
+    return { error: "Only the uploader can delete this idea." };
+  }
+  await sql`
+    DELETE FROM project_ideas
+    WHERE project_id = ${access.project.id} AND slug = ${slug}
+  `;
+  return { ok: true };
+}
+
 export async function listProjectIdeasForJudge(publicId: string): Promise<Idea[]> {
   const result = await listProjectIdeas(publicId);
   if (!("ideas" in result)) return [];

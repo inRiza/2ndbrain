@@ -3,6 +3,7 @@
 import { Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Button from "@/components/action/button";
+import { useAuth } from "@/components/auth/auth-provider";
 import AddIdea from "@/components/info/add-idea";
 import IdeaCard from "@/components/info/idea-card";
 import AppShell from "@/components/navigation/app-shell";
@@ -29,6 +30,7 @@ export default function IdeaWorkspace({
   const [adding, setAdding] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
   const [error, setError] = useState("");
+  const { user } = useAuth();
 
   const load = useCallback(async () => {
     const response = await fetch(
@@ -127,6 +129,8 @@ export default function IdeaWorkspace({
                 idea={row.idea}
                 topic={row.topic}
                 author={row.author}
+                canDelete={Boolean(user?.username && row.author === user.username)}
+                onDeleted={() => void load()}
               />
             ))}
           </div>
