@@ -1,0 +1,225 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --rc-bg: #f8fafc;
+  --rc-surface: #ffffff;
+  --rc-surface-hover: #f1f5f9;
+  --rc-border: #e2e8f0;
+  --rc-border-strong: #cbd5e1;
+  --rc-fg: #0f172a;
+  --rc-fg-muted: #64748b;
+  --rc-fg-subtle: #94a3b8;
+
+  --rc-blue: #4285f4;
+  --rc-red: #ea4335;
+  --rc-yellow: #fbbc04;
+  --rc-green: #34a853;
+  --rc-orange: #ea580c;
+  --rc-primary: var(--rc-blue);
+  --rc-primary-fg: #ffffff;
+
+  --rc-card-border: rgba(15, 23, 42, 0.06);
+  --rc-card-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04), 0 3px 10px rgba(15, 23, 42, 0.05);
+  --rc-card-shadow-hover:
+    0 2px 4px rgba(15, 23, 42, 0.05), 0 8px 22px rgba(15, 23, 42, 0.08);
+
+  --rc-btn-muted: #64748b;
+  --rc-btn-muted-border: #475569;
+}
+
+.dark {
+  --rc-bg: #09090b;
+  --rc-surface: #0c0c0e;
+  --rc-surface-hover: #141416;
+  --rc-border: #27272a;
+  --rc-border-strong: #3f3f46;
+  --rc-fg: #fafafa;
+  --rc-fg-muted: #a1a1aa;
+  --rc-fg-subtle: #71717a;
+
+  --rc-blue: #5b9bf5;
+  --rc-red: #f07167;
+  --rc-yellow: #fcc934;
+  --rc-green: #57bb6a;
+  --rc-orange: #f97316;
+  --rc-primary: var(--rc-blue);
+  --rc-primary-fg: #fafafa;
+
+  --rc-card-border: rgba(255, 255, 255, 0.07);
+  --rc-card-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.22), 0 3px 12px rgba(0, 0, 0, 0.28);
+  --rc-card-shadow-hover:
+    0 2px 6px rgba(0, 0, 0, 0.28), 0 10px 26px rgba(0, 0, 0, 0.34);
+
+  --rc-btn-muted: #3f3f46;
+  --rc-btn-muted-border: #27272a;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --color-rc-bg: var(--rc-bg);
+  --color-rc-surface: var(--rc-surface);
+  --color-rc-surface-hover: var(--rc-surface-hover);
+  --color-rc-border: var(--rc-border);
+  --color-rc-border-strong: var(--rc-border-strong);
+  --color-rc-fg: var(--rc-fg);
+  --color-rc-fg-muted: var(--rc-fg-muted);
+  --color-rc-fg-subtle: var(--rc-fg-subtle);
+  --color-rc-blue: var(--rc-blue);
+  --color-rc-red: var(--rc-red);
+  --color-rc-yellow: var(--rc-yellow);
+  --color-rc-green: var(--rc-green);
+  --color-rc-orange: var(--rc-orange);
+  --color-rc-primary: var(--rc-primary);
+  --color-rc-primary-fg: var(--rc-primary-fg);
+  --color-rc-card-border: var(--rc-card-border);
+}
+
+@layer utilities {
+  .rc-btn-primary {
+    border: 1px solid color-mix(in srgb, var(--rc-primary) 72%, black);
+    color: #fff;
+    text-shadow: 0 1px 0 color-mix(in srgb, black 18%, transparent);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, white 28%, var(--rc-primary)) 0%,
+      var(--rc-primary) 50%,
+      color-mix(in srgb, black 10%, var(--rc-primary)) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, white 48%, transparent),
+      0 2px 5px color-mix(in srgb, var(--rc-primary) 38%, transparent);
+  }
+
+  .rc-btn-primary:hover {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, white 34%, var(--rc-primary)) 0%,
+      color-mix(in srgb, white 6%, var(--rc-primary)) 50%,
+      color-mix(in srgb, black 8%, var(--rc-primary)) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, white 58%, transparent),
+      0 3px 10px color-mix(in srgb, var(--rc-primary) 42%, transparent);
+  }
+
+  .rc-btn-primary:active {
+    box-shadow:
+      inset 0 1px 2px color-mix(in srgb, black 22%, transparent),
+      0 1px 2px color-mix(in srgb, var(--rc-primary) 30%, transparent);
+  }
+
+  .rc-btn-primary.rc-btn-shadow-inset {
+    box-shadow: inset 0 1px 0 color-mix(in srgb, white 48%, transparent);
+    text-shadow: none;
+  }
+
+  .rc-btn-primary.rc-btn-shadow-inset:hover {
+    box-shadow: inset 0 1px 0 color-mix(in srgb, white 58%, transparent);
+  }
+
+  .rc-btn-primary.rc-btn-shadow-inset:active {
+    box-shadow: inset 0 1px 2px color-mix(in srgb, black 22%, transparent);
+  }
+
+  button.rc-btn-muted,
+  a.rc-btn-muted {
+    border: 1px solid color-mix(in srgb, var(--rc-btn-muted-border) 80%, black);
+    color: #fff;
+    text-shadow: 0 1px 0 color-mix(in srgb, black 15%, transparent);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, white 26%, var(--rc-btn-muted)) 0%,
+      var(--rc-btn-muted) 50%,
+      color-mix(in srgb, black 14%, var(--rc-btn-muted)) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, white 44%, transparent),
+      0 2px 5px color-mix(in srgb, var(--rc-btn-muted) 36%, transparent);
+  }
+
+  button.rc-btn-muted:hover,
+  a.rc-btn-muted:hover {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, white 32%, var(--rc-btn-muted)) 0%,
+      color-mix(in srgb, white 6%, var(--rc-btn-muted)) 50%,
+      color-mix(in srgb, black 10%, var(--rc-btn-muted)) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, white 54%, transparent),
+      0 3px 8px color-mix(in srgb, var(--rc-btn-muted) 40%, transparent);
+  }
+
+  button.rc-btn-muted:active,
+  a.rc-btn-muted:active {
+    box-shadow:
+      inset 0 1px 2px color-mix(in srgb, black 20%, transparent),
+      0 1px 2px color-mix(in srgb, var(--rc-btn-muted) 30%, transparent);
+  }
+
+  button.rc-btn-muted.rc-btn-shadow-inset,
+  a.rc-btn-muted.rc-btn-shadow-inset {
+    box-shadow: inset 0 1px 0 color-mix(in srgb, white 44%, transparent);
+    text-shadow: none;
+  }
+
+  button.rc-btn-muted.rc-btn-shadow-inset:hover,
+  a.rc-btn-muted.rc-btn-shadow-inset:hover {
+    box-shadow: inset 0 1px 0 color-mix(in srgb, white 54%, transparent);
+  }
+
+  button.rc-btn-muted.rc-btn-shadow-inset:active,
+  a.rc-btn-muted.rc-btn-shadow-inset:active {
+    box-shadow: inset 0 1px 2px color-mix(in srgb, black 20%, transparent);
+  }
+
+  .rc-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--rc-fg-subtle) 35%, transparent)
+      transparent;
+  }
+
+  .rc-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  .rc-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .rc-scrollbar::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--rc-fg-subtle) 40%, transparent);
+    border-radius: 999px;
+  }
+
+  .rc-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--rc-fg-muted) 55%, transparent);
+  }
+
+  .rc-scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .rc-scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background-color: var(--rc-bg);
+  color: var(--rc-fg);
+  overflow: hidden;
+}
