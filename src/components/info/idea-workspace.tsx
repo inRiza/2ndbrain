@@ -29,10 +29,12 @@ export default function IdeaWorkspace({
   const [customTopic, setCustomTopic] = useState("");
   const [adding, setAdding] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { user } = useAuth();
 
   const load = useCallback(async () => {
+    setLoading(true);
     const response = await fetch(
       `/api/projects/${encodeURIComponent(projectId)}/ideas`,
       { credentials: "include" },
@@ -40,11 +42,13 @@ export default function IdeaWorkspace({
     if (!response.ok) {
       setError("Could not load ideas for this project.");
       setRows([]);
+      setLoading(false);
       return;
     }
     const data = (await response.json()) as { ideas: Row[] };
     setRows(data.ideas);
     setError("");
+    setLoading(false);
   }, [projectId]);
 
   useEffect(() => {
@@ -118,7 +122,35 @@ export default function IdeaWorkspace({
           />
         </div>
         {error ? <p className="text-sm text-rc-red">{error}</p> : null}
-        {visible.length === 0 ? (
+        {loading ? (
+          <div
+            className="grid gap-4 sm:grid-cols-2"
+            aria-busy="true"
+            aria-label="Loading ideas"
+          >
+            {Array.from({ length: 4 }, (_, index) => (
+              <div
+                key={index}
+                className="flex animate-pulse flex-col gap-3 rounded-lg border border-rc-card-border bg-rc-surface p-4"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="h-3 w-24 rounded bg-rc-surface-hover" />
+                  <div className="h-7 w-7 rounded-full bg-rc-surface-hover" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="h-4 w-full rounded bg-rc-surface-hover" />
+                  <div className="h-4 w-4/5 rounded bg-rc-surface-hover" />
+                  <div className="h-3 w-full rounded bg-rc-surface-hover" />
+                  <div className="h-3 w-full rounded bg-rc-surface-hover" />
+                  <div className="h-3 w-2/3 rounded bg-rc-surface-hover" />
+                </div>
+                <div className="mt-auto flex justify-end">
+                  <div className="h-8 w-24 rounded-md bg-rc-surface-hover" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : visible.length === 0 ? (
           <p className="text-sm text-rc-fg-muted">No ideas match this filter.</p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
