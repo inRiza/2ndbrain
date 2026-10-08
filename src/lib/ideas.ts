@@ -24,6 +24,6 @@ export function getIdeaSource(slug: string) {
   return readFileSync(file, "utf8");
 }
 
-export function getContentFile(name: "idea-template.md" | "idea-prompt.md") {
-  return readFileSync(path.join(process.cwd(), "content", name), "utf8");
+export function getIdeaAiPrompt() {
+  return readFileSync(path.join(process.cwd(), "content", "idea-ai-prompt.md"), "utf8");
 }
