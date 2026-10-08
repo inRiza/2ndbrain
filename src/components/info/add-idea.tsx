@@ -13,22 +13,20 @@ export default function AddIdea({
   open,
   onClose,
   projectId,
-  template,
-  prompt,
+  aiPrompt,
   takenSlugs,
   onSaved,
 }: {
   open: boolean;
   onClose: () => void;
   projectId: string;
-  template: string;
-  prompt: string;
+  aiPrompt: string;
   takenSlugs: string[];
   onSaved: () => void;
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [mode, setMode] = useState("template");
+  const [mode, setMode] = useState("prompt");
   const [topic, setTopic] = useState("");
   const [customTopic, setCustomTopic] = useState("");
   const [error, setError] = useState("");
@@ -102,7 +100,7 @@ export default function AddIdea({
               Add idea
             </h2>
             <p className="text-sm leading-relaxed text-rc-fg-muted">
-              Start from the template, or upload a markdown file.
+              Copy one AI prompt, or upload the .md file it returns.
             </p>
           </div>
           <Button purpose="action" style="ghost" onClick={onClose}>
@@ -115,23 +113,16 @@ export default function AddIdea({
             value={mode}
             onChange={setMode}
             options={[
-              { value: "template", label: "From template" },
+              { value: "prompt", label: "AI prompt" },
               { value: "upload", label: "Upload markdown" },
             ]}
           />
-          {mode === "template" ? (
-            <>
-              <CopyBlock
-                title="Markdown"
-                body="Copy this shape and fill it in."
-                text={template.trim()}
-              />
-              <CopyBlock
-                title="Prompt"
-                body="Paste this to an AI, then replace the last line with your idea."
-                text={prompt.trim()}
-              />
-            </>
+          {mode === "prompt" ? (
+            <CopyBlock
+              title="Prompt"
+              body="Paste to an AI. Replace the last line with your idea. Save the reply as a .md file, then upload."
+              text={aiPrompt.trim()}
+            />
           ) : (
             <div className="flex flex-col gap-3">
               <TopicSelect
@@ -142,7 +133,7 @@ export default function AddIdea({
                 onCustom={setCustomTopic}
               />
               <p className="text-sm leading-relaxed text-rc-fg-muted">
-                Upload a markdown file that uses the template sections.
+                Upload the .md file from the AI (same sections as the prompt).
               </p>
               <div className="flex flex-wrap items-center gap-3">
                 <input

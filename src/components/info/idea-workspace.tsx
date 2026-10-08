@@ -1,7 +1,6 @@
 "use client";
 
 import { Search } from "lucide-react";
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Button from "@/components/action/button";
 import AddIdea from "@/components/info/add-idea";
@@ -19,12 +18,10 @@ type Row = {
 
 export default function IdeaWorkspace({
   projectId,
-  template,
-  prompt,
+  aiPrompt,
 }: {
   projectId: string;
-  template: string;
-  prompt: string;
+  aiPrompt: string;
 }) {
   const [query, setQuery] = useState("");
   const [topic, setTopic] = useState("");
@@ -94,8 +91,7 @@ export default function IdeaWorkspace({
           open={adding}
           onClose={() => setAdding(false)}
           projectId={projectId}
-          template={template}
-          prompt={prompt}
+          aiPrompt={aiPrompt}
           takenSlugs={rows.map((row) => row.idea.slug)}
           onSaved={() => void load()}
         />
@@ -135,12 +131,6 @@ export default function IdeaWorkspace({
             ))}
           </div>
         )}
-        <Link
-          href="/projects"
-          className="w-fit text-sm font-medium text-rc-fg-muted hover:text-rc-fg"
-        >
-          All projects
-        </Link>
       </div>
     </AppShell>
   );

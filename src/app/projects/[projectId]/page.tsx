@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import IdeaWorkspace from "@/components/info/idea-workspace";
 import { pageTitle } from "@/lib/brand";
-import { getContentFile } from "@/lib/ideas";
+import { getIdeaAiPrompt } from "@/lib/ideas";
 import { requireProjectMember } from "@/lib/project-server";
 
 export async function generateMetadata({
@@ -25,8 +25,7 @@ export default async function ProjectIdeasPage({
   return (
     <IdeaWorkspace
       projectId={access.project.public_id}
-      template={getContentFile("idea-template.md")}
-      prompt={getContentFile("idea-prompt.md")}
+      aiPrompt={getIdeaAiPrompt()}
     />
   );
 }
