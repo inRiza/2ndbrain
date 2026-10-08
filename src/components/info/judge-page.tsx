@@ -1,16 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import ScorePie from "@/components/info/score-pie";
 import AppShell from "@/components/navigation/app-shell";
-import type { Idea } from "@/lib/idea-doc";
 import {
   averageScore,
-  judgeStorageKey,
   judgeTotal,
-  parseVotes,
   rankScores,
   type JudgeScore,
   type Vote,
@@ -25,44 +22,42 @@ type Row = {
   notes: string[];
 };
 
-type IdeaRow = {
-  idea: Idea;
+type Entry = {
+  slug: string;
+  title: string;
   author: string;
+  votes: Vote[];
 };
 
 export default function JudgePage({ projectId }: { projectId: string }) {
   const [rows, setRows] = useState<Row[]>([]);
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      void (async () => {
-        const response = await fetch(
-          `/api/projects/${encodeURIComponent(projectId)}/ideas`,
-          { credentials: "include" },
-        );
-        if (!response.ok) {
-          setRows([]);
-          setReady(true);
-          return;
-        }
-        const data = (await response.json()) as { ideas: IdeaRow[] };
-        const next = data.ideas.flatMap((item) => {
-          const votes = parseVotes(
-            localStorage.getItem(judgeStorageKey(projectId, item.idea.slug)) ?? "",
-          );
-          if (votes.length === 0) return [];
-          return [toRow(item.idea, votes, item.author)];
-        });
-        setRows(next);
-        setReady(true);
-      })();
-    });
-    return () => cancelAnimationFrame(frame);
+  const load = useCallback(async () => {
+    const response = await fetch(
+      `/api/projects/${encodeURIComponent(projectId)}/judge`,
+      { credentials: "include" },
+    );
+    if (!response.ok) {
+      setRows([]);
+      setReady(true);
+      return;
+    }
+    const data = (await response.json()) as { entries: Entry[] };
+    setRows(data.entries.map(toRow));
+    setReady(true);
   }, [projectId]);
 
-  const remove = (slug: string) => {
-    localStorage.removeItem(judgeStorageKey(projectId, slug));
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const remove = async (slug: string) => {
+    const response = await fetch(
+      `/api/projects/${encodeURIComponent(projectId)}/ideas/${encodeURIComponent(slug)}/judge`,
+      { method: "DELETE", credentials: "include" },
+    );
+    if (!response.ok) return;
     setRows((current) => current.filter((row) => row.slug !== slug));
   };
 
@@ -107,8 +102,8 @@ export default function JudgePage({ projectId }: { projectId: string }) {
                     </span>
                     <button
                       type="button"
-                      aria-label={`Delete ${row.title} from leaderboard`}
-                      onClick={() => remove(row.slug)}
+                      aria-label={`Clear all scores for ${row.title}`}
+                      onClick={() => void remove(row.slug)}
                       className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-rc-fg-muted hover:bg-rc-surface-hover hover:text-rc-fg"
                     >
                       <Trash2 className="h-4 w-4" aria-hidden />
@@ -155,14 +150,16 @@ export default function JudgePage({ projectId }: { projectId: string }) {
   );
 }
 
-function toRow(idea: Idea, votes: Vote[], author: string): Row {
+function toRow(entry: Entry): Row {
   return {
-    slug: idea.slug,
-    title: idea.title,
-    author,
-    score: averageScore(votes),
-    voters: votes.map((vote) => vote.username),
-    notes: votes.flatMap((vote) => (vote.note ? [`${vote.username}: ${vote.note}`] : [])),
+    slug: entry.slug,
+    title: entry.title,
+    author: entry.author,
+    score: averageScore(entry.votes),
+    voters: entry.votes.map((vote) => vote.username),
+    notes: entry.votes.flatMap((vote) =>
+      vote.note ? [`${vote.username}: ${vote.note}`] : [],
+    ),
   };
 }
 

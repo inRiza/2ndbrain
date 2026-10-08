@@ -6,7 +6,6 @@ import { ArrowRight, MoreHorizontal, Trash2 } from "lucide-react";
 import UserAvatar from "@/components/auth/user-avatar";
 import { avatarPath } from "@/lib/avatar";
 import { formatUpdated, type Idea } from "@/lib/idea-doc";
-import { judgeStorageKey } from "@/lib/judge";
 
 export default function IdeaCard({
   idea,
@@ -48,7 +47,6 @@ export default function IdeaCard({
     setBusy(false);
     setMenuOpen(false);
     if (!response.ok) return;
-    localStorage.removeItem(judgeStorageKey(projectId, idea.slug));
     onDeleted?.();
   };
 
