@@ -1,4 +1,5 @@
 import { getUserAvatar } from "@/lib/auth-server";
+import { normalizeAvatarSvg } from "@/lib/avatar";
 
 export async function GET(
   _request: Request,
@@ -10,7 +11,7 @@ export async function GET(
     if (!row) {
       return new Response("Not found", { status: 404 });
     }
-    return new Response(row.avatar_svg, {
+    return new Response(normalizeAvatarSvg(row.avatar_svg), {
       headers: {
         "Content-Type": "image/svg+xml; charset=utf-8",
         "Cache-Control": "public, max-age=3600",

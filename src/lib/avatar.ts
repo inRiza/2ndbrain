@@ -31,8 +31,16 @@ export function generateAvatarSvg(username: string, seed = username) {
     </linearGradient>
   </defs>
   <rect width="96" height="96" rx="48" fill="url(#g)" />
-  <text x="48" y="54" text-anchor="middle" font-family="system-ui, sans-serif" font-size="34" font-weight="600" fill="#ffffff">${initials}</text>
+  <text x="48" y="48" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="34" font-weight="600" fill="#ffffff">${initials}</text>
 </svg>`;
+}
+
+export function normalizeAvatarSvg(svg: string) {
+  if (svg.includes("dominant-baseline")) return svg;
+  return svg.replace(
+    /<text x="48" y="54" text-anchor="middle"/,
+    '<text x="48" y="48" text-anchor="middle" dominant-baseline="central"',
+  );
 }
 
 export function avatarPath(username: string) {
