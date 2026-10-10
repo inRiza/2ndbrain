@@ -3,8 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/action/button";
+import FormWizardSteps from "@/components/action/form-wizard-steps";
 
 type Mode = "pick" | "create" | "join";
+
+const createSteps = ["Password", "Project ID"];
+const joinSteps = ["Project ID", "Password"];
 
 export default function ProjectsHub() {
   const router = useRouter();
@@ -12,8 +16,26 @@ export default function ProjectsHub() {
   const [password, setPassword] = useState("");
   const [projectId, setProjectId] = useState("");
   const [createdId, setCreatedId] = useState("");
+  const [createStep, setCreateStep] = useState(0);
+  const [joinStep, setJoinStep] = useState(0);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const resetCreate = () => {
+    setMode("create");
+    setError("");
+    setPassword("");
+    setCreatedId("");
+    setCreateStep(0);
+  };
+
+  const resetJoin = () => {
+    setMode("join");
+    setError("");
+    setPassword("");
+    setProjectId("");
+    setJoinStep(0);
+  };
 
   const createProject = async () => {
     setBusy(true);
@@ -31,6 +53,7 @@ export default function ProjectsHub() {
       return;
     }
     setCreatedId(data.project.publicId);
+    setCreateStep(1);
   };
 
   const joinProject = async () => {
@@ -70,12 +93,7 @@ export default function ProjectsHub() {
           <div className="flex flex-col gap-3">
             <button
               type="button"
-              onClick={() => {
-                setMode("create");
-                setError("");
-                setPassword("");
-                setCreatedId("");
-              }}
+              onClick={resetCreate}
               className="flex flex-col gap-1 rounded-lg border border-rc-card-border bg-rc-surface p-4 text-left shadow-[var(--rc-card-shadow)] transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[var(--rc-card-shadow-hover)]"
             >
               <span className="text-base font-semibold text-rc-fg">Create new project</span>
@@ -85,12 +103,7 @@ export default function ProjectsHub() {
             </button>
             <button
               type="button"
-              onClick={() => {
-                setMode("join");
-                setError("");
-                setPassword("");
-                setProjectId("");
-              }}
+              onClick={resetJoin}
               className="flex flex-col gap-1 rounded-lg border border-rc-card-border bg-rc-surface p-4 text-left shadow-[var(--rc-card-shadow)] transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[var(--rc-card-shadow-hover)]"
             >
               <span className="text-base font-semibold text-rc-fg">Join project</span>
@@ -102,35 +115,57 @@ export default function ProjectsHub() {
         ) : null}
 
         {mode === "create" ? (
-          <div className="flex flex-col gap-3 rounded-lg border border-rc-border bg-rc-surface p-4">
-            {createdId ? (
+          <div className="flex flex-col gap-4 rounded-lg border border-rc-card-border bg-rc-surface p-5 shadow-[var(--rc-card-shadow)]">
+            <FormWizardSteps labels={createSteps} currentIndex={createStep} />
+            {createStep === 0 ? (
               <>
-                <p className="text-sm text-rc-fg-muted">Project created. Save this ID:</p>
-                <p className="rounded-md border border-rc-border bg-rc-bg px-3 py-2 font-mono text-sm text-rc-fg">
-                  {createdId}
-                </p>
-                <Button purpose="action" style="primary" onClick={enterCreated}>
-                  Open ideas
-                </Button>
-              </>
-            ) : (
-              <>
-                <label className="flex flex-col gap-1">
-                  <span className="text-xs text-rc-fg-subtle">Project password</span>
+                <div className="flex flex-col gap-1">
+                  <h2 className="text-lg font-semibold text-rc-fg">Set a project password</h2>
+                  <p className="text-sm text-rc-fg-muted">
+                    Share this password with teammates who should join this project.
+                  </p>
+                </div>
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-xs font-medium text-rc-fg-subtle">Project password</span>
                   <input
                     type="password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    className="rounded-md border border-rc-border bg-rc-surface px-3 py-1.5 text-sm outline-none"
+                    autoComplete="new-password"
+                    className="rounded-md border border-rc-border bg-rc-bg px-3 py-2 text-sm text-rc-fg outline-none transition-[box-shadow,border-color] focus:border-rc-fg-subtle focus:ring-2 focus:ring-rc-fg/10"
                   />
                 </label>
                 {error ? <p className="text-sm text-rc-red">{error}</p> : null}
-                <div className="flex flex-wrap gap-2">
-                  <Button purpose="action" style="primary" onClick={() => void createProject()}>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <Button
+                    purpose="action"
+                    style="primary"
+                    onClick={() => void createProject()}
+                  >
                     {busy ? "Creating…" : "Create project"}
                   </Button>
                   <Button purpose="action" style="ghost" onClick={() => setMode("pick")}>
                     Back
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col gap-1">
+                  <h2 className="text-lg font-semibold text-rc-fg">Save your project ID</h2>
+                  <p className="text-sm text-rc-fg-muted">
+                    You will need this ID and the password to rejoin or invite others.
+                  </p>
+                </div>
+                <p className="rounded-md border border-rc-border bg-rc-bg px-3 py-2.5 font-mono text-sm text-rc-fg">
+                  {createdId}
+                </p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <Button purpose="action" style="primary" onClick={enterCreated}>
+                    Open ideas
+                  </Button>
+                  <Button purpose="action" style="ghost" onClick={() => setMode("pick")}>
+                    Done
                   </Button>
                 </div>
               </>
@@ -139,34 +174,84 @@ export default function ProjectsHub() {
         ) : null}
 
         {mode === "join" ? (
-          <div className="flex flex-col gap-3 rounded-lg border border-rc-border bg-rc-surface p-4">
-            <label className="flex flex-col gap-1">
-              <span className="text-xs text-rc-fg-subtle">Project ID</span>
-              <input
-                value={projectId}
-                onChange={(event) => setProjectId(event.target.value)}
-                placeholder="stk-xxxxxxxx"
-                className="rounded-md border border-rc-border bg-rc-surface px-3 py-1.5 text-sm outline-none"
-              />
-            </label>
-            <label className="flex flex-col gap-1">
-              <span className="text-xs text-rc-fg-subtle">Project password</span>
-              <input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                className="rounded-md border border-rc-border bg-rc-surface px-3 py-1.5 text-sm outline-none"
-              />
-            </label>
-            {error ? <p className="text-sm text-rc-red">{error}</p> : null}
-            <div className="flex flex-wrap gap-2">
-              <Button purpose="action" style="primary" onClick={() => void joinProject()}>
-                {busy ? "Joining…" : "Join project"}
-              </Button>
-              <Button purpose="action" style="ghost" onClick={() => setMode("pick")}>
-                Back
-              </Button>
-            </div>
+          <div className="flex flex-col gap-4 rounded-lg border border-rc-card-border bg-rc-surface p-5 shadow-[var(--rc-card-shadow)]">
+            <FormWizardSteps labels={joinSteps} currentIndex={joinStep} />
+            {joinStep === 0 ? (
+              <>
+                <div className="flex flex-col gap-1">
+                  <h2 className="text-lg font-semibold text-rc-fg">Which project?</h2>
+                  <p className="text-sm text-rc-fg-muted">
+                    Paste the project ID from your team (starts with stk-).
+                  </p>
+                </div>
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-xs font-medium text-rc-fg-subtle">Project ID</span>
+                  <input
+                    value={projectId}
+                    onChange={(event) => setProjectId(event.target.value)}
+                    placeholder="stk-xxxxxxxx"
+                    autoComplete="off"
+                    className="rounded-md border border-rc-border bg-rc-bg px-3 py-2 text-sm text-rc-fg outline-none transition-[box-shadow,border-color] focus:border-rc-fg-subtle focus:ring-2 focus:ring-rc-fg/10"
+                  />
+                </label>
+                {error ? <p className="text-sm text-rc-red">{error}</p> : null}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <Button
+                    purpose="action"
+                    style="primary"
+                    onClick={() => {
+                      setError("");
+                      if (!projectId.trim()) {
+                        setError("Enter a project ID.");
+                        return;
+                      }
+                      setJoinStep(1);
+                    }}
+                  >
+                    Continue
+                  </Button>
+                  <Button purpose="action" style="ghost" onClick={() => setMode("pick")}>
+                    Back
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col gap-1">
+                  <h2 className="text-lg font-semibold text-rc-fg">Project password</h2>
+                  <p className="text-sm text-rc-fg-muted">
+                    Joining{" "}
+                    <span className="font-mono text-rc-fg">{projectId.trim() || "…"}</span>
+                  </p>
+                </div>
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-xs font-medium text-rc-fg-subtle">Password</span>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    autoComplete="current-password"
+                    className="rounded-md border border-rc-border bg-rc-bg px-3 py-2 text-sm text-rc-fg outline-none transition-[box-shadow,border-color] focus:border-rc-fg-subtle focus:ring-2 focus:ring-rc-fg/10"
+                  />
+                </label>
+                {error ? <p className="text-sm text-rc-red">{error}</p> : null}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <Button purpose="action" style="primary" onClick={() => void joinProject()}>
+                    {busy ? "Joining…" : "Join project"}
+                  </Button>
+                  <Button
+                    purpose="action"
+                    style="ghost"
+                    onClick={() => {
+                      setError("");
+                      setJoinStep(0);
+                    }}
+                  >
+                    Back
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         ) : null}
       </div>
