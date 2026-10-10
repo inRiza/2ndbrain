@@ -11,11 +11,10 @@ export default function Navbar({ projectId = "" }: { projectId?: string }) {
   const judgeHref = inProject
     ? `/projects/${encodeURIComponent(projectId)}/judge`
     : "/projects";
-
   return (
-    <header className="sticky top-0 z-50 border-b border-rc-border bg-rc-surface/95 backdrop-blur-sm">
-      <div className="mx-auto flex items-center justify-between gap-4 px-4 py-2">
-        <Link href="/projects" className="shrink-0 text-lg font-semibold text-rc-fg">
+    <header className="bg-rc-bg">
+      <div className="flex items-center justify-between gap-4 px-4 py-2">
+        <Link href="/projects" className="shrink-0 text-lg font-semibold tracking-tight text-rc-fg">
           2ndbrain
         </Link>
         <nav className="flex min-w-0 flex-1 justify-center gap-1">
