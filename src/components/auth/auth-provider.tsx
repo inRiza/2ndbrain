@@ -18,7 +18,7 @@ type AuthContextValue = {
   register: (username: string, password: string) => Promise<string>;
   logout: () => Promise<void>;
   changePassword: (password: string) => Promise<string>;
-  regenerateAvatar: () => Promise<string>;
+  regenerateAvatar: (colorId: string) => Promise<string>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -97,10 +97,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return "";
   }, []);
 
-  const regenerateAvatar = useCallback(async () => {
+  const regenerateAvatar = useCallback(async (colorId: string) => {
     const response = await fetch("/api/auth/avatar/regenerate", {
       method: "POST",
       credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ color: colorId }),
     });
     const data = await readJson<{ user?: PublicUser; error?: string }>(response);
     if (!response.ok || !data.user) {

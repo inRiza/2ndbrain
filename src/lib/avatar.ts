@@ -16,27 +16,33 @@ export function avatarInitials(username: string) {
   return (compact.slice(0, 2) || "??").toUpperCase();
 }
 
+export const avatarColors = [
+  { id: "rose", fill: "#f6c9cf", ink: "#7a3b46" },
+  { id: "peach", fill: "#f8d7b8", ink: "#7a4d2c" },
+  { id: "sand", fill: "#f3e3b8", ink: "#6d5824" },
+  { id: "sage", fill: "#cfe3c8", ink: "#3d5c38" },
+  { id: "mint", fill: "#c5e6dc", ink: "#2f5c52" },
+  { id: "sky", fill: "#c9dff5", ink: "#2e5278" },
+  { id: "lilac", fill: "#ddd4f5", ink: "#53447a" },
+  { id: "stone", fill: "#e4e2de", ink: "#4a4844" },
+] as const;
+
+export function avatarColorById(id: string) {
+  return avatarColors.find((color) => color.id === id);
+}
+
 export function generateAvatarSvg(username: string, seed = username) {
   const initials = avatarInitials(username);
-  const hash = hashString(`${username}:${seed}`);
-  const hue = hash % 360;
-  const hue2 = (hash * 7) % 360;
-  const bg = `hsl(${hue} 62% 42%)`;
-  const accent = `hsl(${hue2} 70% 58%)`;
+  const chosen =
+    avatarColorById(seed) ?? avatarColors[hashString(`${username}:${seed}`) % avatarColors.length]!;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="${username} avatar">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="${bg}" />
-      <stop offset="100%" stop-color="${accent}" />
-    </linearGradient>
-  </defs>
-  <rect width="96" height="96" rx="48" fill="url(#g)" />
-  ${avatarInitialsMarkup(initials)}
+  <rect width="96" height="96" rx="48" fill="${chosen.fill}" />
+  ${avatarInitialsMarkup(initials, chosen.ink)}
 </svg>`;
 }
 
-function avatarInitialsMarkup(initials: string) {
-  return `<g transform="translate(48,48)"><text text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" font-family="system-ui, -apple-system, sans-serif" font-size="34" font-weight="600" fill="#ffffff">${initials}</text></g>`;
+function avatarInitialsMarkup(initials: string, ink = "#3f3f46") {
+  return `<g transform="translate(48,48)"><text text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" font-family="system-ui, -apple-system, sans-serif" font-size="34" font-weight="600" fill="${ink}">${initials}</text></g>`;
 }
 
 export function normalizeAvatarSvg(svg: string) {
@@ -48,5 +54,5 @@ export function normalizeAvatarSvg(svg: string) {
 }
 
 export function avatarPath(username: string) {
-  return `/api/users/${encodeURIComponent(username)}/avatar`;
+  return `/api/users/${encodeURIComponent(username)}/avatar?style=pastel`;
 }

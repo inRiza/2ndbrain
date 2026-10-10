@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { regenerateAvatar } from "@/lib/auth-server";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const result = await regenerateAvatar();
+    const body = (await request.json()) as { color?: string };
+    const result = await regenerateAvatar(body.color ?? "");
     if ("error" in result) {
       return NextResponse.json({ error: result.error }, { status: 401 });
     }

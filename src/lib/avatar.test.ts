@@ -6,13 +6,11 @@ test("avatarInitials uses two parts when present", () => {
   expect(avatarInitials("stacklist")).toBe("ST");
 });
 
-test("generateAvatarSvg changes when the seed changes", () => {
-  const a = generateAvatarSvg("ada", "one");
-  const b = generateAvatarSvg("ada", "two");
-  expect(a).toContain("<svg");
-  expect(a).not.toBe(b);
-  expect(a).toContain('transform="translate(48,48)"');
-  expect(a).toContain('dominant-baseline="middle"');
+test("generateAvatarSvg uses a flat pastel for a chosen color", () => {
+  const svg = generateAvatarSvg("ada", "sage");
+  expect(svg).toContain('fill="#cfe3c8"');
+  expect(svg).not.toContain("linearGradient");
+  expect(svg).toContain('transform="translate(48,48)"');
 });
 
 test("normalizeAvatarSvg fixes legacy vertical text position", () => {

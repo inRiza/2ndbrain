@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
-import { avatarPath, generateAvatarSvg } from "@/lib/avatar";
+import { avatarColorById, avatarPath, generateAvatarSvg } from "@/lib/avatar";
 import { normalizeUsername, sessionCookie, validateUsername, type PublicUser } from "@/lib/auth-shared";
 import { ensureSchema, getSql } from "@/lib/db";
 
@@ -24,7 +24,7 @@ export async function initAuthStore() {
 function toPublicUser(row: Pick<DbUser, "username"> & { avatar_seed: string }): PublicUser {
   return {
     username: row.username,
-    avatarUrl: `${avatarPath(row.username)}?v=${encodeURIComponent(row.avatar_seed)}`,
+    avatarUrl: `${avatarPath(row.username)}&s=${encodeURIComponent(row.avatar_seed)}`,
   };
 }
 
@@ -118,10 +118,12 @@ export async function changePassword(password: string) {
   return { ok: true as const };
 }
 
-export async function regenerateAvatar() {
+export async function regenerateAvatar(colorId: string) {
   const current = await getCurrentUser();
   if (!current) return { error: "Not signed in." };
-  const seed = crypto.randomUUID();
+  const color = avatarColorById(colorId);
+  if (!color) return { error: "Pick a color." };
+  const seed = color.id;
   const svg = generateAvatarSvg(current.username, seed);
   const sql = getSql();
   await sql`
