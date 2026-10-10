@@ -5,9 +5,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Button from "@/components/action/button";
 import { useAuth } from "@/components/auth/auth-provider";
 import AddIdea from "@/components/info/add-idea";
+import BrainGraph from "@/components/info/brain-page";
 import IdeaCard from "@/components/info/idea-card";
 import AppShell from "@/components/navigation/app-shell";
 import TopicSelect from "@/components/search/topic-select";
+import type { BrainSeed } from "@/lib/brain-graph";
 import type { Idea } from "@/lib/idea-doc";
 import { resolvedTopic } from "@/lib/topics";
 
@@ -25,6 +27,7 @@ export default function IdeaWorkspace({
   aiPrompt: string;
 }) {
   const [query, setQuery] = useState("");
+  const [person, setPerson] = useState("");
   const [topic, setTopic] = useState("");
   const [customTopic, setCustomTopic] = useState("");
   const [adding, setAdding] = useState(false);
@@ -55,10 +58,20 @@ export default function IdeaWorkspace({
     void load();
   }, [load]);
 
+  const people = useMemo(
+    () => [...new Set(rows.map((row) => row.author.trim()).filter(Boolean))].sort(),
+    [rows],
+  );
+  const topics = useMemo(
+    () => [...new Set(rows.map((row) => row.topic.trim()).filter(Boolean))].sort(),
+    [rows],
+  );
+
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
     const chosen = resolvedTopic(topic, customTopic);
     return rows.filter((row) => {
+      if (person && row.author !== person) return false;
       if (chosen && row.topic !== chosen) return false;
       if (!needle) return true;
       const haystack = [row.idea.title, row.idea.summary, row.idea.tags.join(" ")]
@@ -66,18 +79,38 @@ export default function IdeaWorkspace({
         .toLowerCase();
       return haystack.includes(needle);
     });
-  }, [customTopic, query, rows, topic]);
+  }, [customTopic, person, query, rows, topic]);
 
-  const topics = useMemo(() => rows.map((row) => row.topic).filter(Boolean), [rows]);
+  const seeds = useMemo<BrainSeed[]>(
+    () =>
+      visible.map((row) => ({
+        slug: row.idea.slug,
+        title: row.idea.title,
+        author: row.author,
+        topic: row.topic,
+        tags: row.idea.tags,
+      })),
+    [visible],
+  );
 
   return (
     <AppShell projectId={projectId}>
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4">
+      <div className="grid w-full items-start gap-6 px-4 transition-[grid-template-columns] duration-300 ease-out lg:grid-cols-[minmax(22rem,1fr)_minmax(0,1.15fr)]">
+        <BrainGraph
+          projectId={projectId}
+          seeds={seeds}
+          loading={loading}
+          person={person}
+          topic={resolvedTopic(topic, customTopic)}
+          onPerson={setPerson}
+          onTopic={(next) => {
+            setCustomTopic("");
+            setTopic(next);
+          }}
+        />
+        <div className="flex min-w-0 flex-col gap-6">
         <div className="flex flex-wrap items-start justify-between gap-3 px-1">
           <div className="flex min-w-0 flex-col gap-1">
-            <p className="text-xs font-medium uppercase tracking-wide text-rc-fg-subtle">
-              {projectId}
-            </p>
             <h1 className="text-2xl font-semibold tracking-tight text-rc-fg">Ideas</h1>
             <p className="text-sm leading-relaxed text-rc-fg-muted">
               A directory of ideas in this project. Open a note to score it, or copy the
@@ -101,8 +134,8 @@ export default function IdeaWorkspace({
           takenSlugs={rows.map((row) => row.idea.slug)}
           onSaved={() => void load()}
         />
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <label className="flex h-9 min-w-0 w-full flex-1 items-center gap-2 rounded-md border border-rc-border bg-rc-surface px-3 sm:min-w-[12rem]">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <label className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-md border border-rc-border bg-rc-surface px-3">
             <Search className="h-4 w-4 shrink-0 text-rc-fg-subtle" aria-hidden />
             <input
               value={query}
@@ -113,8 +146,19 @@ export default function IdeaWorkspace({
           </label>
           <TopicSelect
             allowAll
-            className="shrink-0 self-start sm:self-auto"
+            choices={people}
+            emptyLabel="All people"
+            ariaLabel="Person"
+            className="shrink-0"
+            value={person}
+            custom=""
+            onValue={setPerson}
+            onCustom={() => undefined}
+          />
+          <TopicSelect
+            allowAll
             extra={topics}
+            className="shrink-0"
             value={topic}
             custom={customTopic}
             onValue={setTopic}
@@ -167,6 +211,7 @@ export default function IdeaWorkspace({
             ))}
           </div>
         )}
+        </div>
       </div>
     </AppShell>
   );

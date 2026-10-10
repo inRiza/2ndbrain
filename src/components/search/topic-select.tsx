@@ -16,6 +16,9 @@ export default function TopicSelect({
   onCustom,
   allowAll = false,
   extra = [],
+  choices,
+  emptyLabel,
+  ariaLabel = "Topic",
   className = "",
   fullWidth = false,
 }: {
@@ -25,6 +28,9 @@ export default function TopicSelect({
   onCustom: (value: string) => void;
   allowAll?: boolean;
   extra?: string[];
+  choices?: string[];
+  emptyLabel?: string;
+  ariaLabel?: string;
   className?: string;
   fullWidth?: boolean;
 }) {
@@ -37,7 +43,7 @@ export default function TopicSelect({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const customRef = useRef<HTMLInputElement>(null);
-  const options = [
+  const options = choices ?? [
     ...topicOptions,
     ...extra.filter((topic, index, list) => {
       const name = topic.trim();
@@ -48,10 +54,11 @@ export default function TopicSelect({
       );
     }),
   ];
+  const blank = emptyLabel ?? (allowAll ? "All topics" : "Choose a topic");
   const label =
     value === customTopic
       ? custom.trim() || "Custom"
-      : value || (allowAll ? "All topics" : "Choose a topic");
+      : value || blank;
 
   const syncMenu = () => {
     const node = triggerRef.current;
@@ -133,7 +140,7 @@ export default function TopicSelect({
               onClick={() => pick("")}
               className="flex w-full px-3 py-1.5 text-left text-sm text-rc-fg-muted hover:bg-rc-surface-hover"
             >
-              {allowAll ? "All topics" : "Choose a topic"}
+              {blank}
             </button>
           </li>
           {options.map((topic) => (
@@ -149,6 +156,7 @@ export default function TopicSelect({
               </button>
             </li>
           ))}
+          {choices ? null : (
           <li>
             <button
               type="button"
@@ -175,6 +183,7 @@ export default function TopicSelect({
               />
             ) : null}
           </li>
+          )}
         </ul>
       </div>
     ) : null;
@@ -186,7 +195,7 @@ export default function TopicSelect({
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label="Topic"
+        aria-label={ariaLabel}
         onClick={() => setOpen((current) => !current)}
         className={cn(triggerClass, fullWidth && "w-full min-w-0 max-w-none")}
       >
