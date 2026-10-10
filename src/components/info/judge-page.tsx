@@ -65,9 +65,6 @@ export default function JudgePage({ projectId }: { projectId: string }) {
     <AppShell projectId={projectId}>
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4">
         <div className="flex flex-col gap-1">
-          <p className="text-xs font-medium uppercase tracking-wide text-rc-fg-subtle">
-            {projectId}
-          </p>
           <h1 className="text-2xl font-semibold tracking-tight text-rc-fg">Judge</h1>
           <p className="text-sm leading-relaxed text-rc-fg-muted">
             Ranked by Idea, Flow, and FAQ. Open a row to see the pie.
@@ -157,7 +154,7 @@ export default function JudgePage({ projectId }: { projectId: string }) {
                   <article
                     key={row.slug}
                     id={row.slug}
-                    className="flex scroll-mt-20 flex-col gap-3 rounded-lg border border-rc-card-border bg-rc-surface p-4 shadow-[var(--rc-card-shadow)]"
+                    className="flex scroll-mt-20 flex-col gap-3 rounded-lg border border-rc-border bg-rc-surface p-4 transition-colors hover:bg-rc-surface-hover"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <Link
@@ -176,7 +173,21 @@ export default function JudgePage({ projectId }: { projectId: string }) {
                         {note}
                       </p>
                     ))}
-                    <p className="text-xs text-rc-fg-subtle">{voterLine(row)}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {row.author ? (
+                        <span className="rounded-md bg-rc-border px-2 py-0.5 text-[11px] text-rc-fg-muted">
+                          {row.author}
+                        </span>
+                      ) : null}
+                      {row.voters.map((name) => (
+                        <span
+                          key={name}
+                          className="rounded-md bg-rc-border px-2 py-0.5 text-[11px] text-rc-fg-muted"
+                        >
+                          {name}
+                        </span>
+                      ))}
+                    </div>
                   </article>
                 ))}
               </div>
@@ -207,5 +218,5 @@ function voterLine(row: Row) {
     row.voters.length ? `voted by ${row.voters.join(", ")}` : "",
   ]
     .filter(Boolean)
-    .join(" · ");
+    .join(", ");
 }

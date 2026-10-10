@@ -4,9 +4,9 @@ import { Cell, Pie, PieChart, Tooltip } from "recharts";
 import type { JudgeScore } from "@/lib/judge";
 
 const slices = [
-  { key: "idea", label: "Idea", fill: "var(--rc-blue)" },
+  { key: "idea", label: "Idea", fill: "var(--rc-fg)" },
   { key: "flow", label: "Flow", fill: "var(--rc-green)" },
-  { key: "faq", label: "FAQ", fill: "var(--rc-orange)" },
+  { key: "faq", label: "FAQ", fill: "var(--rc-yellow)" },
 ] as const;
 
 export default function ScorePie({ score }: { score: JudgeScore }) {
