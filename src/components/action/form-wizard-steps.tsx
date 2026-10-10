@@ -9,63 +9,46 @@ export default function FormWizardSteps({
 }) {
   if (labels.length <= 1) return null;
 
+  const total = labels.length;
+  const progress = ((currentIndex + 1) / total) * 100;
+
   return (
-    <nav aria-label="Progress" className="w-full">
-      <ol className="flex items-start justify-between gap-1">
+    <nav aria-label="Progress" className="flex w-full flex-col gap-3">
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="text-xs font-medium tracking-wide text-rc-fg-subtle uppercase">
+          Step {currentIndex + 1} of {total}
+        </p>
+        <p className="truncate text-sm font-medium text-rc-fg">{labels[currentIndex]}</p>
+      </div>
+      <div
+        className="h-1 w-full overflow-hidden rounded-full bg-rc-surface-hover"
+        role="progressbar"
+        aria-valuemin={1}
+        aria-valuemax={total}
+        aria-valuenow={currentIndex + 1}
+        aria-label={`Step ${currentIndex + 1}: ${labels[currentIndex]}`}
+      >
+        <div
+          className="h-full rounded-full bg-rc-fg transition-[width] duration-300 ease-out"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+      <ol className="flex justify-between gap-2">
         {labels.map((label, index) => {
-          const done = index < currentIndex;
           const active = index === currentIndex;
+          const done = index < currentIndex;
           return (
             <li
               key={label}
               className={cn(
-                "flex min-w-0 flex-1 flex-col items-center gap-1.5",
-                index === labels.length - 1 && "flex-none",
+                "min-w-0 flex-1 truncate text-center text-xs",
+                active && "font-medium text-rc-fg",
+                done && !active && "text-rc-fg-muted",
+                !active && !done && "text-rc-fg-subtle",
               )}
+              aria-current={active ? "step" : undefined}
             >
-              <div className="flex w-full items-center">
-                {index > 0 ? (
-                  <div
-                    className={cn(
-                      "h-px min-w-2 flex-1",
-                      index <= currentIndex ? "bg-rc-fg/40" : "bg-rc-border",
-                    )}
-                    aria-hidden
-                  />
-                ) : (
-                  <div className="min-w-2 flex-1" aria-hidden />
-                )}
-                <span
-                  className={cn(
-                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold tabular-nums transition-colors",
-                    active && "bg-rc-fg text-rc-bg shadow-sm",
-                    done && "bg-rc-fg/90 text-rc-bg",
-                    !active && !done && "border border-rc-border bg-rc-surface text-rc-fg-muted",
-                  )}
-                  aria-current={active ? "step" : undefined}
-                >
-                  {index + 1}
-                </span>
-                {index < labels.length - 1 ? (
-                  <div
-                    className={cn(
-                      "h-px min-w-2 flex-1",
-                      index < currentIndex ? "bg-rc-fg/40" : "bg-rc-border",
-                    )}
-                    aria-hidden
-                  />
-                ) : (
-                  <div className="min-w-2 flex-1" aria-hidden />
-                )}
-              </div>
-              <span
-                className={cn(
-                  "w-full truncate px-0.5 text-center text-[11px] font-medium leading-tight sm:text-xs",
-                  active ? "text-rc-fg" : "text-rc-fg-muted",
-                )}
-              >
-                {label}
-              </span>
+              {label}
             </li>
           );
         })}
