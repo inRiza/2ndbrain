@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 import TabPicker from "@/components/action/tab-picker";
 import Button from "@/components/action/button";
 import CopyBlock from "@/components/info/copy-block";
@@ -92,7 +93,7 @@ export default function AddIdea({
         role="dialog"
         aria-modal="true"
         aria-labelledby="add-idea-title"
-        className="relative z-10 flex max-h-[min(40rem,85vh)] w-full max-w-lg flex-col overflow-hidden rounded-lg border border-rc-border bg-rc-surface shadow-[var(--rc-card-shadow)]"
+        className="relative z-10 flex max-h-[min(40rem,85vh)] w-full max-w-lg flex-col overflow-hidden rounded-lg border border-rc-border bg-rc-surface"
       >
         <div className="flex items-start justify-between gap-3 border-b border-rc-border p-4 pb-3">
           <div className="flex flex-col gap-1">
@@ -103,9 +104,14 @@ export default function AddIdea({
               Copy one AI prompt, or upload the .md file it returns.
             </p>
           </div>
-          <Button purpose="action" style="ghost" onClick={onClose}>
-            Close
-          </Button>
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={onClose}
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-rc-fg-muted hover:bg-rc-surface-hover hover:text-rc-fg"
+          >
+            <X className="h-4 w-4" aria-hidden />
+          </button>
         </div>
         <div className="rc-scrollbar flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 pt-3">
           <TabPicker

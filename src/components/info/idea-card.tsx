@@ -51,10 +51,19 @@ export default function IdeaCard({
   };
 
   return (
-    <article className="flex flex-col gap-3 rounded-lg border border-rc-card-border bg-rc-surface p-4 shadow-[var(--rc-card-shadow)] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[var(--rc-card-shadow-hover)]">
+    <article className="flex flex-col gap-3 rounded-lg border border-rc-border bg-rc-surface p-4 transition-colors hover:bg-rc-surface-hover">
       <div className="flex items-center justify-between gap-3">
-        <span className="min-w-0 truncate text-xs text-rc-fg-subtle">
-          {[topic, idea.updated ? formatUpdated(idea.updated) : ""].filter(Boolean).join(" · ")}
+        <span className="flex min-w-0 flex-wrap gap-1.5">
+          {[topic, idea.updated ? formatUpdated(idea.updated) : ""]
+            .filter(Boolean)
+            .map((label) => (
+              <span
+                key={label}
+                className="truncate rounded-md bg-rc-border px-2 py-0.5 text-[11px] text-rc-fg-muted"
+              >
+                {label}
+              </span>
+            ))}
         </span>
         <div className="flex shrink-0 items-center gap-1">
           {author ? (
@@ -72,7 +81,7 @@ export default function IdeaCard({
                 <MoreHorizontal className="h-4 w-4" aria-hidden />
               </button>
               {menuOpen ? (
-                <div className="absolute right-0 top-full z-10 mt-1 min-w-[8.5rem] overflow-hidden rounded-md border border-rc-border bg-rc-surface py-1 shadow-[var(--rc-card-shadow)]">
+                <div className="absolute right-0 top-full z-10 mt-1 min-w-[8.5rem] overflow-hidden rounded-md border border-rc-border bg-rc-surface py-1">
                   <button
                     type="button"
                     disabled={busy}

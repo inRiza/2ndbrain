@@ -119,7 +119,7 @@ export default function MarkdownBody({ source }: { source: string }) {
     const items = list;
     list = [];
     blocks.push(
-      <ul key={blocks.length} className="flex list-disc flex-col gap-1 pl-5">
+      <ul key={blocks.length} className="flex list-none flex-col gap-1 pl-0">
         {items.map((item, index) => (
           <li key={index} className="text-sm leading-relaxed text-rc-fg-muted">
             <InlineText inlines={parseInlines(item)} />

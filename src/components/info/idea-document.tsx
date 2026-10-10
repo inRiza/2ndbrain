@@ -41,17 +41,21 @@ export default function IdeaDocument({
             {author ? (
               <UserAvatar username={author} avatarUrl={avatarUrl} size={32} />
             ) : null}
-            <span className="text-xs text-rc-fg-subtle">
-              {[topic, author, idea.updated ? formatUpdated(idea.updated) : ""]
+            <span className="flex flex-wrap gap-1.5">
+              {[topic, idea.updated ? formatUpdated(idea.updated) : ""]
                 .filter(Boolean)
-                .join(" · ")}
+                .map((label) => (
+                  <span
+                    key={label}
+                    className="rounded-md bg-rc-border px-2 py-0.5 text-[11px] text-rc-fg-muted"
+                  >
+                    {label}
+                  </span>
+                ))}
             </span>
           </div>
           <h1 className="text-2xl font-semibold tracking-tight text-rc-fg">{idea.title}</h1>
           <p className="text-sm leading-relaxed text-rc-fg-muted">{idea.summary}</p>
-          {idea.tags.length > 0 ? (
-            <p className="text-xs text-rc-fg-subtle">{idea.tags.join(" · ")}</p>
-          ) : null}
         </header>
         {idea.idea ? (
           <section className="flex flex-col gap-2">

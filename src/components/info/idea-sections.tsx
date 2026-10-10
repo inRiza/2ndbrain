@@ -25,7 +25,7 @@ export function FlowGraph({ edges }: { edges: FlowEdge[] }) {
               {layer.map((node) => (
                 <div
                   key={node}
-                  className="max-w-full rounded-lg border border-rc-card-border bg-rc-surface px-3 py-2 text-center text-sm font-medium text-rc-fg shadow-[var(--rc-card-shadow)]"
+                  className="max-w-full rounded-lg border border-rc-border bg-rc-surface px-3 py-2 text-center text-sm font-medium text-rc-fg"
                 >
                   {node}
                 </div>
