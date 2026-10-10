@@ -11,13 +11,13 @@ test("generateAvatarSvg changes when the seed changes", () => {
   const b = generateAvatarSvg("ada", "two");
   expect(a).toContain("<svg");
   expect(a).not.toBe(b);
-  expect(a).toContain('dominant-baseline="central"');
+  expect(a).toContain('transform="translate(48,48)"');
+  expect(a).toContain('dominant-baseline="middle"');
 });
 
 test("normalizeAvatarSvg fixes legacy vertical text position", () => {
-  const legacy = generateAvatarSvg("ada", "one").replace(
-    'y="48" text-anchor="middle" dominant-baseline="central"',
-    'y="54" text-anchor="middle"',
-  );
-  expect(normalizeAvatarSvg(legacy)).toContain('dominant-baseline="central"');
+  const legacy = `<svg viewBox="0 0 96 96"><text x="48" y="54" text-anchor="middle">AL</text></svg>`;
+  const fixed = normalizeAvatarSvg(legacy);
+  expect(fixed).toContain('transform="translate(48,48)"');
+  expect(fixed).toContain(">AL<");
 });

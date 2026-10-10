@@ -31,16 +31,20 @@ export function generateAvatarSvg(username: string, seed = username) {
     </linearGradient>
   </defs>
   <rect width="96" height="96" rx="48" fill="url(#g)" />
-  <text x="48" y="48" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="34" font-weight="600" fill="#ffffff">${initials}</text>
+  ${avatarInitialsMarkup(initials)}
 </svg>`;
 }
 
+function avatarInitialsMarkup(initials: string) {
+  return `<g transform="translate(48,48)"><text text-anchor="middle" dominant-baseline="middle" alignment-baseline="middle" font-family="system-ui, -apple-system, sans-serif" font-size="34" font-weight="600" fill="#ffffff">${initials}</text></g>`;
+}
+
 export function normalizeAvatarSvg(svg: string) {
-  if (svg.includes("dominant-baseline")) return svg;
-  return svg.replace(
-    /<text x="48" y="54" text-anchor="middle"/,
-    '<text x="48" y="48" text-anchor="middle" dominant-baseline="central"',
-  );
+  if (svg.includes('transform="translate(48,48)"')) return svg;
+  const match = svg.match(/<text[^>]*>([^<]*)<\/text>/);
+  if (!match) return svg;
+  const initials = match[1] ?? "??";
+  return svg.replace(/<text[^>]*>[^<]*<\/text>/, avatarInitialsMarkup(initials));
 }
 
 export function avatarPath(username: string) {
