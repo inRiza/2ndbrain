@@ -74,7 +74,25 @@ export default function JudgePanel({
         </Link>
       </div>
       {!ready ? (
-        <p className="text-sm text-rc-fg-muted">Loading scores…</p>
+        <div className="flex flex-col gap-3" aria-busy="true" aria-label="Loading scores">
+          {[0, 1, 2].map((index) => (
+            <div
+              key={index}
+              className="flex flex-wrap items-center justify-between gap-2"
+            >
+              <div className="h-4 w-12 animate-pulse rounded bg-rc-surface-hover" />
+              <div className="inline-flex gap-1 rounded-md border border-rc-border p-0.5">
+                {Array.from({ length: 5 }, (_, dot) => (
+                  <div
+                    key={dot}
+                    className="h-8 w-8 animate-pulse rounded-md bg-rc-surface-hover"
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+          <div className="h-20 animate-pulse rounded-md border border-rc-border bg-rc-surface-hover" />
+        </div>
       ) : (
         <>
           <div className="flex flex-col gap-2">
