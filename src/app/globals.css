@@ -17,7 +17,7 @@
   --rc-yellow: #fbbc04;
   --rc-green: #34a853;
   --rc-orange: #ea580c;
-  --rc-primary: var(--rc-blue);
+  --rc-primary: #111111;
   --rc-primary-fg: #ffffff;
 
   --rc-card-border: rgba(15, 23, 42, 0.06);
@@ -45,8 +45,8 @@
   --rc-yellow: #fcc934;
   --rc-green: #57bb6a;
   --rc-orange: #f97316;
-  --rc-primary: var(--rc-blue);
-  --rc-primary-fg: #fafafa;
+  --rc-primary: #fafafa;
+  --rc-primary-fg: #111111;
 
   --rc-card-border: rgba(255, 255, 255, 0.07);
   --rc-card-shadow:
@@ -82,8 +82,8 @@
 @layer utilities {
   .rc-btn-primary {
     border: 1px solid color-mix(in srgb, var(--rc-primary) 72%, black);
-    color: #fff;
-    text-shadow: 0 1px 0 color-mix(in srgb, black 18%, transparent);
+    color: var(--rc-primary-fg);
+    text-shadow: none;
     background: linear-gradient(
       180deg,
       color-mix(in srgb, white 28%, var(--rc-primary)) 0%,
@@ -222,4 +222,8 @@ body {
   background-color: var(--rc-bg);
   color: var(--rc-fg);
   overflow: hidden;
+}
+
+.rc-btn-primary {
+  color: var(--rc-primary-fg);
 }

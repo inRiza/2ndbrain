@@ -19,7 +19,7 @@ function Button({
 }: ButtonProps) {
   const sharedClassName = cn(
     "inline-flex cursor-pointer items-center justify-center rounded-md border border-transparent px-3.5 py-1.5 text-sm font-medium transition-[box-shadow,background-color,color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rc-primary/40",
-    style === "primary" && "rc-btn-primary",
+    style === "primary" && "rc-btn-primary text-rc-primary-fg",
     style === "secondary" &&
       "border-rc-border bg-rc-surface text-rc-fg hover:bg-rc-surface-hover",
     style === "ghost" &&
