@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/action/button";
 import { useAuth } from "@/components/auth/auth-provider";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -29,7 +30,8 @@ export default function LoginForm() {
   };
 
   return (
-    <main className="flex h-screen items-center justify-center bg-rc-bg px-4 text-rc-fg">
+    <main className="relative flex h-screen items-center justify-center bg-rc-bg px-4 text-rc-fg">
+      <ThemeToggle className="absolute right-4 top-4" />
       <form
         onSubmit={(event) => {
           event.preventDefault();
