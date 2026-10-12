@@ -1,51 +1,24 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Settings } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
-export default function Navbar({ projectId = "" }: { projectId?: string }) {
-  const pathname = usePathname();
-  const inProject = Boolean(projectId);
-  const ideasHref = inProject ? `/projects/${encodeURIComponent(projectId)}` : "/projects";
-  const judgeHref = inProject
-    ? `/projects/${encodeURIComponent(projectId)}/judge`
-    : "/projects";
+export default function Navbar({ onSettings }: { onSettings?: () => void }) {
   return (
     <header className="bg-rc-bg">
-      <div className="flex items-center justify-between gap-4 px-4 py-2">
-        <Link href="/projects" className="shrink-0 text-lg font-semibold tracking-tight text-rc-fg">
-          2ndbrain
-        </Link>
-        <nav className="flex min-w-0 flex-1 justify-center gap-1">
-          {inProject ? (
-            <>
-              <Link
-                href={ideasHref}
-                className={
-                  pathname === ideasHref
-                    ? "rounded-sm bg-rc-surface-hover px-2.5 py-1.5 text-sm font-medium text-rc-fg"
-                    : "rounded-sm px-2.5 py-1.5 text-sm font-medium text-rc-fg-muted transition-colors hover:bg-rc-surface-hover hover:text-rc-fg"
-                }
-              >
-                Ideas
-              </Link>
-              <Link
-                href={judgeHref}
-                className={
-                  pathname === judgeHref
-                    ? "rounded-sm bg-rc-surface-hover px-2.5 py-1.5 text-sm font-medium text-rc-fg"
-                    : "rounded-sm px-2.5 py-1.5 text-sm font-medium text-rc-fg-muted transition-colors hover:bg-rc-surface-hover hover:text-rc-fg"
-                }
-              >
-                Judge
-              </Link>
-            </>
-          ) : null}
-        </nav>
-        <div className="flex shrink-0 items-center gap-2">
-          <ThemeToggle />
-        </div>
+      <div className="flex items-center justify-end gap-2 px-4 py-2">
+        {onSettings ? (
+          <button
+            type="button"
+            aria-label="Settings"
+            title="Settings"
+            onClick={onSettings}
+            className="flex items-center justify-center rounded-xl border border-rc-border bg-rc-surface p-2.5 text-rc-fg transition-colors hover:bg-rc-surface-hover"
+          >
+            <Settings className="h-4 w-4" aria-hidden />
+          </button>
+        ) : null}
+        <ThemeToggle />
       </div>
     </header>
   );

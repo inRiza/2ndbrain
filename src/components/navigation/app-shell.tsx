@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Navbar from "@/components/navigation/navbar";
-import SettingsRail from "@/components/navigation/settings-rail";
+import SettingsRail, { type RailPanel } from "@/components/navigation/settings-rail";
 
 const storageKey = "stacklist-sidebar-collapsed";
 
@@ -14,6 +14,7 @@ export default function AppShell({
   projectId?: string;
 }) {
   const [collapsed, setCollapsed] = useState(false);
+  const [panel, setPanel] = useState<RailPanel>("");
 
   useEffect(() => {
     setCollapsed(localStorage.getItem(storageKey) === "1");
@@ -34,9 +35,11 @@ export default function AppShell({
         showBack={Boolean(projectId)}
         collapsed={collapsed}
         onToggle={toggle}
+        panel={panel}
+        onPanel={setPanel}
       />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <Navbar projectId={projectId} />
+        <Navbar onSettings={() => setPanel("project")} />
         <div className="min-h-0 flex-1 px-2 pb-2 pt-1">
           <section className="rc-scrollbar h-full min-h-0 overflow-y-auto overflow-x-hidden rounded-2xl bg-rc-surface py-6">
             {children}

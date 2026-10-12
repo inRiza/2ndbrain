@@ -1,28 +1,50 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Copy, PanelLeft, PanelLeftClose, Settings, X } from "lucide-react";
+import {
+  ArrowLeft,
+  CalendarRange,
+  Copy,
+  GanttChart,
+  KanbanSquare,
+  LayoutList,
+  Lightbulb,
+  PanelLeft,
+  PanelLeftClose,
+  Scale,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import Button from "@/components/action/button";
 import UserAvatar from "@/components/auth/user-avatar";
 import { useAuth } from "@/components/auth/auth-provider";
 import { avatarColors } from "@/lib/avatar";
+
+export type RailPanel = "" | "profile" | "project";
+
+type PageLink = { href: string; label: string; icon: LucideIcon; active: boolean };
 
 export default function SettingsRail({
   projectId = "",
   showBack = false,
   collapsed = false,
   onToggle,
+  panel,
+  onPanel: setPanel,
 }: {
   projectId?: string;
   showBack?: boolean;
   collapsed?: boolean;
   onToggle?: () => void;
+  panel: RailPanel;
+  onPanel: (panel: RailPanel) => void;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user, changePassword, logout, regenerateAvatar } = useAuth();
-  const [panel, setPanel] = useState<"" | "profile" | "project">("");
   const [copied, setCopied] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -45,7 +67,7 @@ export default function SettingsRail({
       cancelAnimationFrame(frame);
       window.removeEventListener("keydown", onKey);
     };
-  }, [panel]);
+  }, [panel, setPanel]);
 
   const save = async () => {
     if (!password.trim()) {
@@ -75,6 +97,40 @@ export default function SettingsRail({
   const switchAccount = async () => {
     await logout();
     router.replace("/login");
+  };
+
+  const pageTree = (): { label: string; icon: LucideIcon; children: PageLink[] }[] => {
+    const base = `/projects/${encodeURIComponent(projectId)}`;
+    const inPlanning = pathname.startsWith(`${base}/planning`);
+    const view = searchParams.get("view") === "board" ? "board" : "timeline";
+    const planningHref = (next: string) => {
+      const params = new URLSearchParams(inPlanning ? searchParams.toString() : "");
+      params.set("view", next);
+      return `${base}/planning?${params.toString()}`;
+    };
+    return [
+      {
+        label: "Idea",
+        icon: Lightbulb,
+        children: [
+          {
+            href: base,
+            label: "Ideas",
+            icon: LayoutList,
+            active: pathname === base || pathname.startsWith(`${base}/ideas`),
+          },
+          { href: `${base}/judge`, label: "Judge", icon: Scale, active: pathname === `${base}/judge` },
+        ],
+      },
+      {
+        label: "Planning",
+        icon: CalendarRange,
+        children: [
+          { href: planningHref("timeline"), label: "Timeline", icon: GanttChart, active: inPlanning && view === "timeline" },
+          { href: planningHref("board"), label: "Board", icon: KanbanSquare, active: inPlanning && view === "board" },
+        ],
+      },
+    ];
   };
 
   if (!user) return null;
@@ -143,27 +199,52 @@ export default function SettingsRail({
             </span>
           </Link>
         ) : null}
-        <button
-          type="button"
-          title="Settings"
-          onClick={() => setPanel("project")}
-          className={
-            collapsed
-              ? "inline-flex h-8 w-8 items-center justify-center rounded-md text-rc-fg-muted hover:bg-rc-surface-hover hover:text-rc-fg"
-              : "inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-rc-fg-muted transition-colors hover:bg-rc-surface-hover hover:text-rc-fg"
-          }
-        >
-          <Settings className="h-4 w-4 shrink-0" aria-hidden />
-          <span
-            className={
-              collapsed
-                ? "w-0 overflow-hidden whitespace-nowrap opacity-0 transition-[opacity,width] duration-200"
-                : "truncate opacity-100 transition-[opacity,width] duration-200"
-            }
-          >
-            Settings
-          </span>
-        </button>
+        {projectId ? (
+          <nav className={collapsed ? "my-2 flex flex-col items-center gap-1" : "my-2 flex flex-col gap-0.5 border-t border-rc-border/60 pt-3"}>
+            {!collapsed ? (
+              <span className="px-2 pb-1 text-[11px] font-medium uppercase tracking-wide text-rc-fg-subtle">
+                Pages
+              </span>
+            ) : null}
+            {pageTree().map((group) => (
+              <div key={group.label} className="flex flex-col gap-0.5">
+                {collapsed ? null : (
+                  <Link
+                    href={group.children[0].href}
+                    className={[
+                      "inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium transition-colors hover:bg-rc-surface-hover",
+                      group.children.some((child) => child.active) ? "text-rc-fg" : "text-rc-fg-muted hover:text-rc-fg",
+                    ].join(" ")}
+                  >
+                    <group.icon className="h-4 w-4 shrink-0" aria-hidden />
+                    <span className="truncate">{group.label}</span>
+                  </Link>
+                )}
+                <div className={collapsed ? "flex flex-col items-center gap-1" : "ml-[15px] flex flex-col gap-0.5 border-l border-rc-border pl-2"}>
+                  {group.children.map((child) => (
+                    <Link
+                      key={child.label}
+                      href={child.href}
+                      title={child.label}
+                      aria-current={child.active ? "page" : undefined}
+                      className={[
+                        collapsed
+                          ? "inline-flex h-8 w-8 items-center justify-center rounded-md"
+                          : "inline-flex items-center gap-2 rounded-md px-2 py-1 text-[13px]",
+                        child.active
+                          ? "bg-rc-surface-hover font-medium text-rc-fg"
+                          : "text-rc-fg-muted transition-colors hover:bg-rc-surface-hover hover:text-rc-fg",
+                      ].join(" ")}
+                    >
+                      <child.icon className={collapsed ? "h-4 w-4" : "h-3.5 w-3.5 shrink-0"} aria-hidden />
+                      {collapsed ? null : <span className="truncate">{child.label}</span>}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </nav>
+        ) : null}
       </aside>
       {panel ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center">
