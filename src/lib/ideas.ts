@@ -27,3 +27,7 @@ export function getIdeaSource(slug: string) {
 export function getIdeaAiPrompt() {
   return readFileSync(path.join(process.cwd(), "content", "idea-ai-prompt.md"), "utf8");
 }
+
+export function getPlanAiPrompt() {
+  return readFileSync(path.join(process.cwd(), "content", "plan-ai-prompt.md"), "utf8");
+}

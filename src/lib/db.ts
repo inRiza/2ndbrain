@@ -86,4 +86,14 @@ async function runEnsureSchema() {
     )
   `;
   await sql`CREATE INDEX IF NOT EXISTS project_idea_votes_project_idx ON project_idea_votes(project_id)`;
+  await sql`
+    CREATE TABLE IF NOT EXISTS project_plans (
+      project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+      slug TEXT NOT NULL,
+      data JSONB NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (project_id, slug),
+      FOREIGN KEY (project_id, slug) REFERENCES project_ideas (project_id, slug) ON DELETE CASCADE
+    )
+  `;
 }
