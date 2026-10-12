@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import IdeaWorkspace from "@/components/info/idea-workspace";
 import { pageTitle } from "@/lib/brand";
 import { getIdeaAiPrompt } from "@/lib/ideas";
-import { requireProjectMember } from "@/lib/project-server";
+import { getProjectName, requireProjectMember } from "@/lib/project-server";
 
 export async function generateMetadata({
   params,
@@ -10,7 +10,8 @@ export async function generateMetadata({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = await params;
-  return { title: pageTitle(decodeURIComponent(projectId)) };
+  const id = decodeURIComponent(projectId);
+  return { title: pageTitle((await getProjectName(id)) || id) };
 }
 
 export default async function ProjectIdeasPage({

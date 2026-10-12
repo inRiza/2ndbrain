@@ -3,8 +3,8 @@ import { createProject } from "@/lib/project-server";
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as { password?: string };
-    const result = await createProject(body.password ?? "");
+    const body = (await request.json()) as { name?: string; password?: string };
+    const result = await createProject(body.name ?? "", body.password ?? "");
     if ("error" in result) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }

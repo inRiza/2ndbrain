@@ -50,6 +50,7 @@ async function runEnsureSchema() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `;
+  await sql`ALTER TABLE projects ADD COLUMN IF NOT EXISTS name TEXT NOT NULL DEFAULT ''`;
   await sql`
     CREATE TABLE IF NOT EXISTS project_members (
       project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,

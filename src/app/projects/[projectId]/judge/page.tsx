@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import JudgePage from "@/components/info/judge-page";
 import { pageTitle } from "@/lib/brand";
-import { requireProjectMember } from "@/lib/project-server";
+import { getProjectName, requireProjectMember } from "@/lib/project-server";
 
 export async function generateMetadata({
   params,
@@ -9,7 +9,8 @@ export async function generateMetadata({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = await params;
-  return { title: pageTitle(`Judge · ${decodeURIComponent(projectId)}`) };
+  const id = decodeURIComponent(projectId);
+  return { title: pageTitle(`Judge · ${(await getProjectName(id)) || id}`) };
 }
 
 export default async function ProjectJudgePage({
