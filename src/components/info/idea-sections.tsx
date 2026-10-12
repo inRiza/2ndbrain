@@ -1,42 +1,8 @@
-import { ArrowDown, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import {
-  flowLayers,
   type FaqItem,
-  type FlowEdge,
   type IdeaLink,
 } from "@/lib/idea-doc";
-
-export function FlowGraph({ edges }: { edges: FlowEdge[] }) {
-  const layers = flowLayers(edges);
-  if (layers.length === 0) return null;
-  return (
-    <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold text-rc-fg-muted">User flow</h2>
-      <div className="flex flex-col items-center gap-2">
-        {layers.map((layer, index) => (
-          <div
-            key={layer.join("|")}
-            className="flex w-full flex-col items-center gap-2"
-          >
-            {index > 0 ? (
-              <ArrowDown className="h-4 w-4 text-rc-fg-subtle" aria-hidden />
-            ) : null}
-            <div className="flex flex-wrap justify-center gap-2">
-              {layer.map((node) => (
-                <div
-                  key={node}
-                  className="max-w-full rounded-lg border border-rc-border bg-rc-surface px-3 py-2 text-center text-sm font-medium text-rc-fg"
-                >
-                  {node}
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 export function FaqList({ items }: { items: FaqItem[] }) {
   if (items.length === 0) return null;

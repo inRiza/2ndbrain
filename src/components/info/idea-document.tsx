@@ -2,7 +2,8 @@ import Link from "next/link";
 import UserAvatar from "@/components/auth/user-avatar";
 import CopyMarkdown from "@/components/info/copy-markdown";
 import JudgePanel from "@/components/info/judge-panel";
-import { FaqList, FlowGraph, LinkList } from "@/components/info/idea-sections";
+import FlowDiagram from "@/components/info/flow-diagram";
+import { FaqList, LinkList } from "@/components/info/idea-sections";
 import MarkdownBody from "@/components/info/markdown-body";
 import AppShell from "@/components/navigation/app-shell";
 import { avatarPath } from "@/lib/avatar";
@@ -63,7 +64,7 @@ export default function IdeaDocument({
             <MarkdownBody source={idea.idea} />
           </section>
         ) : null}
-        <FlowGraph edges={idea.flow} />
+        <FlowDiagram edges={idea.flow} />
         <FaqList items={idea.faq} />
         {idea.design ? (
           <section className="flex flex-col gap-2">
